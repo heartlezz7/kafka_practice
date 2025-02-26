@@ -14,7 +14,7 @@ func main() {
 	// Connection part
 	cfg := config.KafkaConnCfg{
 		Url:   "localhost:9092",
-		Topic: "shop",
+		Topic: "order",
 	}
 	conn := utils.KafkaConn(cfg)
 
@@ -51,9 +51,17 @@ func main() {
 			},
 		}
 
+		orders := []models.Order{
+			{
+				Id:     "f7b3f1b1-3b82-4b7b-8b3e-4b4b1f3b7b3b",
+				Status: "shipping",
+				Item:   products,
+			},
+		}
+
 		// Convert into kafka.Message{}
 		messages := make([]kafka.Message, 0)
-		for _, p := range products {
+		for _, p := range orders {
 			messages = append(messages, kafka.Message{
 				Value: utils.CompressToJsonBytes(&p),
 			})

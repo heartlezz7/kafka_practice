@@ -1,30 +1,10 @@
 package consumer
 
-import (
-	"fmt"
-	"log"
+func Consumer() {
+	var forever = make(chan bool)
 
-	"github.com/heartlezz7/kafka_practice/config"
-	"github.com/heartlezz7/kafka_practice/pkg/utils"
-)
+	go ShopConsumer()
+	go OrderConsumer()
 
-func Init() {
-	cfg := config.KafkaConnCfg{
-		Url:   "localhost:9092",
-		Topic: "shop",
-	}
-	conn := utils.KafkaConn(cfg)
-
-	for {
-		message, err := conn.ReadMessage(10e3)
-		if err != nil {
-			break
-		}
-		fmt.Printf("\n\nmessage: %s \n\n", string(message.Value))
-
-	}
-
-	if err := conn.Close(); err != nil {
-		log.Fatal("failed to close connection:", err)
-	}
+	<-forever
 }

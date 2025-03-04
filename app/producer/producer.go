@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"time"
 
@@ -70,6 +71,20 @@ func main() {
 	}()
 
 	// Set timeout
+
+	k := kafka.NewWriter(kafka.WriterConfig{
+		Brokers:  []string{cfg.Url},
+		Topic:    cfg.Topic,
+		Balancer: &kafka.LeastBytes{}})
+
+	k.WriteMessages(context.Background(), kafka.Message{
+		Value: []byte("Hello Kafka!"),
+		Topic: cfg.Topic,
+		Key:   []byte("order-123"),
+		Headers: []kafka.Header{
+			{Key: "message_type", Value: []byte("OrderPlaced")},
+		},
+	})
 	conn.SetReadDeadline(time.Now().Add(10 * time.Second))
 	_, err := conn.WriteMessages(data...)
 	if err != nil {
